@@ -9,5 +9,5 @@
 ### Table csv
 Tables user, role in `public` schema for user DB
 ```bash
-./table_csv_export.sh -h localhost -p 5432 -U postgres -d users --table-names user_mst,role_mst --schema public
+./table_csv_export.sh -h localhost -p 5432 -U postgres -d users-db --table-names user_mst,role_mst --schema public
 ```
