@@ -30,8 +30,8 @@ case $key in
   shift # past argument
   shift # past value
   ;;
-  --table-names)
-  TABLE_NAMES="$2"
+  --dump-folder)
+  DUMP_FOLDER="$2"
   shift # past argument
   shift # past value
   ;;
@@ -48,10 +48,11 @@ DUMP_FOLDER="table-csv-dump-${START_TS}"
 
 mkdir -p $DUMP_FOLDER
 
-for i in $(echo $TABLE_NAMES | sed "s/,/ /g")
+for f in $DUMP_FOLDER/*.csv
 do
   echo
-  echo "Creating .csv dump for ${i}"
-  OP_STR="psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USERNAME} -d ${DB_DATABASE} -c \"\COPY ${DB_SCHEMA}.${i} TO '${DUMP_FOLDER}/${i}.csv' WITH (FORMAT CSV, HEADER);\""
-  (eval $OP_STR && echo ".csv dump successful for ${i}") || (rm $DUMP_FOLDER/${i}.csv && echo ".csv dump failure for ${i}")
+  echo "Executing .csv dump for ${f}"
+  TABLE_NAME=$(echo $(basename ${f}) | cut -f 1 -d '.')
+  OP_STR="psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USERNAME} -d ${DB_DATABASE} -c \"\COPY ${DB_SCHEMA}.${TABLE_NAME} FROM '${DUMP_FOLDER}/${f}.csv' WITH (FORMAT CSV, HEADER);\""
+  (eval $OP_STR && echo ".csv dump successful for ${i}") || echo ".csv dump failed for ${i}"
 done
